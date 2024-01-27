@@ -1,0 +1,10 @@
+namespace #NAMESPACE#
+{
+    public class #SCRIPTNAME#
+    {
+        public #SCRIPTNAME#()
+        {
+        
+        }
+    }
+}
