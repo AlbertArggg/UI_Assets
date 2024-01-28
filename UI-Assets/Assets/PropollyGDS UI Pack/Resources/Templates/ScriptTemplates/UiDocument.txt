@@ -1,0 +1,15 @@
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace #NAMESPACE#
+{
+    public class #SCRIPTNAME# : VisualElement
+    { 
+        public new class UxmlFactory : UxmlFactory<#SCRIPTNAME#, UxmlTraits> {}
+        
+        public void Init()
+        {
+            
+        }
+    }
+}

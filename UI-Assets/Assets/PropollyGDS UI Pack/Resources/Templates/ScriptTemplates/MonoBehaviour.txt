@@ -1,0 +1,35 @@
+using UnityEngine;
+
+namespace #NAMESPACE#
+{
+    public class #SCRIPTNAME# : MonoBehaviour
+    {
+        // [SECTION:Awake]
+        private void Awake()
+        {
+            
+        }
+        // [ENDSECTION]
+        
+        // [SECTION:Enable]
+        private void OnEnable()
+        {
+              
+        }
+        // [ENDSECTION]
+        
+        // [SECTION:Start]
+        private void Start()
+        {
+            
+        }
+        // [ENDSECTION]
+        
+        // [SECTION:Update]
+        private void Update()
+        {
+            
+        }
+        // [ENDSECTION]
+    }
+}
