@@ -273,7 +273,16 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
                 if (!includeNamespace || selectedFolderPath.Equals("Assets", StringComparison.OrdinalIgnoreCase))
                 {
                     string namespacePattern = @"namespace #NAMESPACE#\s*{((?:[^{}]|{(?<c>)|}(?<-c>))*(?(c)(?!)))}";
-                    templateContent = Regex.Replace(templateContent, namespacePattern, m => m.Groups[1].Value, RegexOptions.Singleline);
+                    templateContent = Regex.Replace(templateContent, namespacePattern, m =>
+                    {
+                        var content = m.Groups[1].Value;
+                        var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                        var adjustedLines = lines.Select(line =>
+                        {
+                            return line.StartsWith("    ") ? line.Substring(4) : line;
+                        });
+                        return string.Join(Environment.NewLine, adjustedLines);
+                    }, RegexOptions.Singleline);
                 }
                 else
                 {
