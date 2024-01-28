@@ -21,6 +21,7 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
         private static string fileName = "NewFile";
         private static readonly string[] tabs = { "Text Files", "C# Templates" };
         private static string selectedFolderPath = "Assets";
+        private static bool includeNamespace = true;
         
         private static string _abstractClass = Resources.Load<TextAsset>(Constants.ScriptingTemplates.ABSTRACT_CLASS).text;
         private static string _cSharp = Resources.Load<TextAsset>(Constants.ScriptingTemplates.CSHARP_CLASS).text;
@@ -101,58 +102,64 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
             void DrawFolder(string path, int indentLevel)
             {
                 var directories = Directory.GetDirectories(path).OrderBy(d => d).ToList();
-                
-                GUIStyle buttonLikeLabel = new GUIStyle(GUI.skin.label)
+
+                // Define a GUIStyle that looks like a label but behaves like a button
+                GUIStyle labelLikeButton = new GUIStyle(GUI.skin.label)
                 {
                     alignment = TextAnchor.MiddleLeft,
-                    padding = new RectOffset(2, 2, 2, 2), // Adjust padding to match your design needs
+                    padding = new RectOffset(2, 2, 2, 2),
                 };
 
-                // Mouse hover effect similar to a button
-                Color originalBackgroundColor = GUI.backgroundColor;
-                buttonLikeLabel.hover.background = Texture2D.whiteTexture;
-                buttonLikeLabel.hover.textColor = EditorStyles.label.normal.textColor;
+                // Define GUIStyle for the foldout icons
+                GUIStyle iconButtonStyle = new GUIStyle(GUI.skin.label)
+                {
+                    fixedWidth = 12,
+                    fixedHeight = 12,
+                    alignment = TextAnchor.MiddleCenter,
+                    margin = new RectOffset(0, 4, 4, 0),
+                    padding = new RectOffset(0, 0, 0, 0)
+                };
+
+                // Use built-in Unity icons for foldout controls
+                Texture2D iconFolded = Constants.Icons.ARROW_LEFT;
+                Texture2D iconExpanded = Constants.Icons.ARROW_DOWN;
+                Texture2D iconLastNode = Constants.Icons.ARROW_CUBE;
 
                 foreach (var directory in directories)
                 {
                     var relativePath = directory.Replace(Application.dataPath, "Assets");
                     var folderName = Path.GetFileName(directory);
 
-                    // Create foldout state if it doesn't exist
-                    if (!foldouts.ContainsKey(relativePath))
-                        foldouts[relativePath] = false;
+                    foldouts.TryAdd(relativePath, false);
 
                     EditorGUILayout.BeginHorizontal();
-                    GUILayout.Space(indentLevel * 20); // Indent child folders
+                    GUILayout.Space(indentLevel * 20);
 
-                    // Change the background color when the mouse is over the label to mimic button hover effect
-                    if (GUILayoutUtility.GetLastRect().Contains(Event.current.mousePosition))
-                    {
-                        GUI.backgroundColor = new Color(originalBackgroundColor.r, originalBackgroundColor.g, originalBackgroundColor.b, 0.5f);
-                    }
-                    else
-                    {
-                        GUI.backgroundColor = originalBackgroundColor;
-                    }
+                    bool hasChildren = Directory.GetDirectories(directory).Any();
+                    Texture iconToShow = foldouts[relativePath] ? iconExpanded : hasChildren ? iconFolded : null;
+                    
+                    if (iconToShow is null) iconToShow = iconLastNode;
 
-                    // Draw the button with custom GUIStyle
-                    if (GUILayout.Button(folderName, buttonLikeLabel, GUILayout.ExpandWidth(true)))
+                    if (GUILayout.Button(iconToShow, iconButtonStyle))
+                    {
+                        foldouts[relativePath] = !foldouts[relativePath];
+                    }
+                    
+                    // Clicking the text will select the folder
+                    if (GUILayout.Button(folderName, labelLikeButton, GUILayout.ExpandWidth(true)))
                     {
                         selectedFolderPath = relativePath;
-                        foldouts[relativePath] = !foldouts[relativePath]; // Toggle foldout state
                     }
 
-                    GUI.backgroundColor = originalBackgroundColor; // Reset the background color
                     EditorGUILayout.EndHorizontal();
 
-                    // If the foldout is true, draw the subfolders
                     if (foldouts.TryGetValue(relativePath, out bool isExpanded) && isExpanded)
                     {
                         DrawFolder(directory, indentLevel + 1);
                     }
                 }
             }
-
+            
             private void TextFileGUI()
             {
                 GUILayout.Space(10);
@@ -184,8 +191,12 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
                 GUILayout.Space(10);
                 fileName = EditorGUILayout.TextField("File Name:", fileName);
 
+                GUILayout.Space(10);
+                includeNamespace = EditorGUILayout.Toggle("Include Namespace", includeNamespace);
+                
+                GUILayout.Space(10);
                 DynamicSectionToggles();
-
+                
                 GUILayout.Space(10);
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.FlexibleSpace();
@@ -202,9 +213,7 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
                 
                 foreach (var section in ParseSections(templateContent))
                 {
-                    if (!sectionToggles.ContainsKey(section))
-                        sectionToggles[section] = false; // Default to unchecked
-
+                    sectionToggles.TryAdd(section, false); // Default to unchecked
                     sectionToggles[section] = EditorGUILayout.Toggle(section, sectionToggles[section]);
                 }
             }
@@ -232,63 +241,64 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
                 File.WriteAllText(fullPath, "Your text here...");
                 AssetDatabase.Refresh();
             }
-
+            
             private void CreateScriptFile()
             {
                 string templateContent = GetTemplate();
+                templateContent = templateContent.Replace("#SCRIPTNAME#", fileName);
 
-                // Modify this part to include/exclude sections based on toggles
+                // Include/Exclude sections based on toggles and remove section markers
                 foreach (var section in sectionToggles)
                 {
                     string pattern = $"// \\[SECTION:{section.Key}\\](.*?)// \\[ENDSECTION\\]";
                     Match match = Regex.Match(templateContent, pattern, RegexOptions.Singleline);
 
-                    if (section.Value)
+                    if (match.Success)
                     {
-                        // Include the content of the section only
-                        if (match.Success)
+                        if (section.Value)
                         {
+                            // Keep the section content, remove the section markers
                             string sectionContent = match.Groups[1].Value;
                             templateContent = templateContent.Replace(match.Value, sectionContent);
                         }
-                    }
-                    else
-                    {
-                        // Remove the entire section, including markers
-                        templateContent = Regex.Replace(templateContent, pattern, "", RegexOptions.Singleline);
+                        else
+                        {
+                            // Remove the entire section including markers
+                            templateContent = templateContent.Replace(match.Value, "");
+                        }
                     }
                 }
 
-                string path = AssetDatabase.GetAssetPath(Selection.activeObject);
-                string namespaceName = GenerateNamespaceFromPath(path);
-    
-                templateContent = templateContent.Replace("#NAMESPACE#", namespaceName);
-                templateContent = templateContent.Replace("#SCRIPTNAME#", fileName);
-                templateContent = Regex.Replace(templateContent, @"^\s*$\n|\r", string.Empty, RegexOptions.Multiline);
-                templateContent = templateContent.Replace("#NOTRIM#", "");
-    
+                // Namespace handling
+                if (!includeNamespace || selectedFolderPath.Equals("Assets", StringComparison.OrdinalIgnoreCase))
+                {
+                    string namespacePattern = @"namespace #NAMESPACE#.*?{\s*(.*?)}\s*$";
+                    templateContent = Regex.Replace(templateContent, namespacePattern, m => m.Groups[1].Value, RegexOptions.Singleline | RegexOptions.Multiline);
+                }
+                else
+                {
+                    string namespaceName = GenerateNamespaceFromPath();
+                    templateContent = templateContent.Replace("#NAMESPACE#", namespaceName);
+                }
+                
+                templateContent = Regex.Replace(templateContent, @"^\s+$[\r\n]*", "", RegexOptions.Multiline);
+                
                 string fullPath = GetFullPath(".cs");
                 File.WriteAllText(fullPath, templateContent);
                 AssetDatabase.Refresh();
             }
-
-            private static string GenerateNamespaceFromPath(string filePath)
+            
+            private static string GenerateNamespaceFromPath()
             {
-                string relativePath = filePath.StartsWith(Application.dataPath) 
-                    ? "Assets" + filePath.Substring(Application.dataPath.Length) 
-                    : filePath;
-                
+                string relativePath = selectedFolderPath.StartsWith(Application.dataPath) 
+                    ? "Assets" + selectedFolderPath.Substring(Application.dataPath.Length) 
+                    : selectedFolderPath;
+    
                 relativePath = relativePath.Replace("\\", "/");
-
-                int lastSlashIndex = relativePath.LastIndexOf("/", StringComparison.Ordinal);
-                if (lastSlashIndex > 0)
-                {
-                    relativePath = relativePath.Substring(0, lastSlashIndex);
-                }
 
                 string namespacePath = relativePath.Replace("Assets/", "").Replace("/", ".");
                 namespacePath = namespacePath.Replace(" ", "_");
-                
+    
                 return namespacePath;
             }
 

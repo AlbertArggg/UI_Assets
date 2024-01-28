@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
 {
     public partial class Constants
@@ -30,6 +32,7 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
             ".html", 
             ".css"
         };
+        
         public static string[] CreateCsTemplates =
         {
             "MonoBehaviour", 
@@ -41,5 +44,12 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
             "Scriptable Object", 
             "Singleton"
         };
+
+        public class Icons
+        {
+            public static Texture2D ARROW_DOWN = Resources.Load<Texture2D>("Icons/ArrowDown");
+            public static Texture2D ARROW_LEFT = Resources.Load<Texture2D>("Icons/ArrowLeft");
+            public static Texture2D ARROW_CUBE = Resources.Load<Texture2D>("Icons/Cube");
+        }
     }
 }

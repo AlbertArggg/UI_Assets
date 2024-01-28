@@ -1,5 +1,5 @@
 using UnityEngine;
-#NOTRIM#
+
 namespace #NAMESPACE#
 {
     public class #SCRIPTNAME# : MonoBehaviour
@@ -7,28 +7,28 @@ namespace #NAMESPACE#
         // [SECTION:Awake]
         private void Awake()
         {
-            #NOTRIM#
+            
         }
         // [ENDSECTION]
-        #NOTRIM#
+        
         // [SECTION:Enable]
         private void OnEnable()
         {
-             #NOTRIM#   
+              
         }
         // [ENDSECTION]
-        #NOTRIM#
+        
         // [SECTION:Start]
         private void Start()
         {
-            #NOTRIM#
+            
         }
         // [ENDSECTION]
-        #NOTRIM#
+        
         // [SECTION:Update]
         private void Update()
         {
-            #NOTRIM#
+            
         }
         // [ENDSECTION]
     }

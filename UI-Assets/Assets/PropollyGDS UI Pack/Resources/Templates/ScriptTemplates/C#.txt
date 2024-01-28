@@ -5,7 +5,7 @@ namespace #NAMESPACE#
         // [SECTION:Constructor]
         public #SCRIPTNAME#()
         {
-            #NOTRIM#
+            
         }
         // [ENDSECTION]
     }

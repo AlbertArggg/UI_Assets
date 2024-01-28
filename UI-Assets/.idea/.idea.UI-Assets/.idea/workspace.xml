@@ -11,9 +11,6 @@
       <change beforePath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/C#.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/C#.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/Interface.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/Interface.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/MonoBehaviour.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/MonoBehaviour.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/Popup.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/Popup.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/ScriptableObject.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/ScriptableObject.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/Singleton.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/Singleton.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/UiDocument.txt" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Resources/Templates/ScriptTemplates/UiDocument.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Scripts/Constants/Constants.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Scripts/Constants/Constants.cs" afterDir="false" />
     </list>
@@ -28,6 +25,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Editor/Custom_Menu_Items/CreateFile.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/Assets/PropollyGDS UI Pack/Scripts/Constants/Constants.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Assets/otherFile.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
@@ -105,7 +103,7 @@
       <updated>1706344909043</updated>
       <workItem from="1706344910192" duration="724000" />
       <workItem from="1706350371347" duration="2416000" />
-      <workItem from="1706352831751" duration="9479000" />
+      <workItem from="1706352831751" duration="17790000" />
     </task>
     <servers />
   </component>

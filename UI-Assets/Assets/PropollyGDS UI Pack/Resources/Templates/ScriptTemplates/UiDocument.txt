@@ -1,15 +1,15 @@
 using UnityEngine;
 using UnityEngine.UIElements;
-#NOTRIM#
+
 namespace #NAMESPACE#
 {
     public class #SCRIPTNAME# : VisualElement
     { 
         public new class UxmlFactory : UxmlFactory<#SCRIPTNAME#, UxmlTraits> {}
-        #NOTRIM#
+        
         public void Init()
         {
-            #NOTRIM#
+            
         }
     }
 }
