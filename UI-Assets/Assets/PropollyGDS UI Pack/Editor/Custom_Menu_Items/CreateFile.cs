@@ -272,8 +272,8 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
                 // Namespace handling
                 if (!includeNamespace || selectedFolderPath.Equals("Assets", StringComparison.OrdinalIgnoreCase))
                 {
-                    string namespacePattern = @"namespace #NAMESPACE#.*?{\s*(.*?)}\s*$";
-                    templateContent = Regex.Replace(templateContent, namespacePattern, m => m.Groups[1].Value, RegexOptions.Singleline | RegexOptions.Multiline);
+                    string namespacePattern = @"namespace #NAMESPACE#\s*{((?:[^{}]|{(?<c>)|}(?<-c>))*(?(c)(?!)))}";
+                    templateContent = Regex.Replace(templateContent, namespacePattern, m => m.Groups[1].Value, RegexOptions.Singleline);
                 }
                 else
                 {
