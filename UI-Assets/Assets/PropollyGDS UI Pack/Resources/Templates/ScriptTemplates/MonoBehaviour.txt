@@ -1,27 +1,35 @@
 using UnityEngine;
-
+#NOTRIM#
 namespace #NAMESPACE#
 {
-	public class #SCRIPTNAME# : MonoBehaviour
-	{
-	    private void Awake()
-	    {
-	    
-	    }
-	    
-	    private void OnEnable()
+    public class #SCRIPTNAME# : MonoBehaviour
+    {
+        // [SECTION:Awake]
+        private void Awake()
         {
-        	    
+            #NOTRIM#
         }
-        
+        // [ENDSECTION]
+        #NOTRIM#
+        // [SECTION:Enable]
+        private void OnEnable()
+        {
+             #NOTRIM#   
+        }
+        // [ENDSECTION]
+        #NOTRIM#
+        // [SECTION:Start]
         private void Start()
-	    {
-	    
-	    }
-	    
-	    private void Update()
-	    {
-	    
-	    }
-	}
+        {
+            #NOTRIM#
+        }
+        // [ENDSECTION]
+        #NOTRIM#
+        // [SECTION:Update]
+        private void Update()
+        {
+            #NOTRIM#
+        }
+        // [ENDSECTION]
+    }
 }

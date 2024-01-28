@@ -2,6 +2,6 @@ namespace #NAMESPACE#
 {
 	public abstract class #SCRIPTNAME#
 	{
-	
+	    #NOTRIM#
 	}
 }

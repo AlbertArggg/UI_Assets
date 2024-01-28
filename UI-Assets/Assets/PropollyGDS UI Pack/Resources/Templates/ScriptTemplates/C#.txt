@@ -2,9 +2,11 @@ namespace #NAMESPACE#
 {
     public class #SCRIPTNAME#
     {
+        // [SECTION:Constructor]
         public #SCRIPTNAME#()
         {
-        
+            #NOTRIM#
         }
+        // [ENDSECTION]
     }
 }

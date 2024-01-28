@@ -13,5 +13,33 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
             public static string SINGLETON = "Templates/ScriptTemplates/Singleton";
             public static string UI_DOCUMENT = "Templates/ScriptTemplates/UiDocument";
         }
+
+        public static string[] CreateFileTypes =
+        {
+            ".txt", 
+            ".json", 
+            ".xml", 
+            ".csv", 
+            ".md", 
+            ".yaml", 
+            ".ini", 
+            ".cfg", 
+            ".log", 
+            ".bat", 
+            ".sh", 
+            ".html", 
+            ".css"
+        };
+        public static string[] CreateCsTemplates =
+        {
+            "MonoBehaviour", 
+            "C# Class", 
+            "Abstract Class", 
+            "Interface", 
+            "UI Document", 
+            "Popup", 
+            "Scriptable Object", 
+            "Singleton"
+        };
     }
 }
