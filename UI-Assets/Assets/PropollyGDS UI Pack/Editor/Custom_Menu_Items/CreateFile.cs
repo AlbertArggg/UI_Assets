@@ -19,7 +19,7 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
         private static Dictionary<string, bool> foldouts = new Dictionary<string, bool>();
         
         private static string fileName = "NewFile";
-        private static readonly string[] tabs = { "Text Files", "C# Templates" };
+        private static readonly string[] tabs = { "Directory", "Text Files", "C# Templates" };
         private static string selectedFolderPath = "Assets";
         private static bool includeNamespace = true;
         
@@ -56,110 +56,102 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
             private Dictionary<string, bool> sectionToggles = new Dictionary<string, bool>();
             private void OnGUI()
             {
-                EditorGUILayout.BeginHorizontal(); // Start a horizontal layout to split the window into two columns
-
-                // First column: Folder structure
-                EditorGUILayout.BeginVertical(GUILayout.Width(250), GUILayout.ExpandHeight(true)); // Set a fixed width for the folder column
-                GUILayout.Label("Folder Structure", EditorStyles.boldLabel);
-                scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(true)); // Make the scroll view expand vertically
-
-                if (GUILayout.Button("Root", EditorStyles.toolbarButton))
-                {
-                    selectedFolderPath = "Assets";
-                }
-
-                DrawFolder("Assets", 0);
-
-                GUILayout.EndScrollView();
-                EditorGUILayout.EndVertical(); // End the folder structure column
-
-                // Vertical line separator
-                GUILayout.Box("", GUILayout.Width(1), GUILayout.ExpandHeight(true));
-
-                // Second column: File creation form
-                EditorGUILayout.BeginVertical(GUILayout.ExpandHeight(true)); // Allow the form to expand vertically
                 GUILayout.Space(10);
                 GUILayout.Label("Create File", EditorStyles.largeLabel);
+                
+                GUILayout.Space(10);
                 GUILayout.Label("Selected Path: " + selectedFolderPath, EditorStyles.miniBoldLabel);
-
+                
+                GUILayout.Space(10);
                 tabIndex = GUILayout.Toolbar(tabIndex, tabs, GUILayout.ExpandWidth(true));
-    
+
                 switch (tabIndex)
                 {
                     case 0:
-                        TextFileGUI();
+                        FolderStructureGUI();
                         break;
                     case 1:
+                        TextFileGUI();
+                        break;
+                    case 2:
                         CSharpTemplateGUI();
                         break;
                 }
-
-                EditorGUILayout.EndVertical(); // End the file creation form column
-
-                EditorGUILayout.EndHorizontal(); // End the horizontal layout for both columns
             }
             
+            private void FolderStructureGUI()
+            {
+                if (!foldouts.ContainsKey("Assets"))
+                {
+                    foldouts.Add("Assets", false);
+                }
+
+                // Folder structure tab content
+                GUILayout.Label("Folder Structure", EditorStyles.boldLabel);
+                scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(true));
+                
+                DrawFolder("Assets", -1);
+
+                GUILayout.EndScrollView();
+            }
+            
+            // Put the style creation in a method to call once, so it's not re-created on every call
+            private GUIStyle CreateFolderStyle()
+            {
+                return new GUIStyle(GUI.skin.label)
+                {
+                    alignment = TextAnchor.MiddleLeft,
+                    padding = new RectOffset(2, 2, 2, 2),
+                    margin = new RectOffset(0, 0, 0, 0)
+                };
+            }
+
+            // This method is used to draw the folder structure
             void DrawFolder(string path, int indentLevel)
             {
                 var directories = Directory.GetDirectories(path).OrderBy(d => d).ToList();
 
-                // Define a GUIStyle that looks like a label but behaves like a button
-                GUIStyle labelLikeButton = new GUIStyle(GUI.skin.label)
+                GUIStyle folderStyle = CreateFolderStyle(); // Create folder style
+
+                const float checkboxWidth = 15f;
+                const float baseIndent = 20f; // Base indentation for all levels
+
+                bool isRoot = (path == "Assets" && indentLevel == -1);
+                var folderName = isRoot ? "Assets (Root)" : Path.GetFileName(path);
+                foldouts.TryAdd(path, false);
+
+                EditorGUILayout.BeginHorizontal();
+
+                // Indentation
+                float indentSpace = baseIndent + (indentLevel + 1) * 20;
+                GUILayout.Space(isRoot ? baseIndent : indentSpace);
+
+                // Checkbox for folder selection
+                bool isSelected = selectedFolderPath == path;
+                isSelected = EditorGUILayout.Toggle(isSelected, GUILayout.Width(checkboxWidth));
+                if (isSelected && selectedFolderPath != path)
                 {
-                    alignment = TextAnchor.MiddleLeft,
-                    padding = new RectOffset(2, 2, 2, 2),
-                };
+                    selectedFolderPath = path;
+                }
 
-                // Define GUIStyle for the foldout icons
-                GUIStyle iconButtonStyle = new GUIStyle(GUI.skin.label)
+                // Button for expanding/collapsing
+                if (GUILayout.Button(folderName, folderStyle, GUILayout.ExpandWidth(true)))
                 {
-                    fixedWidth = 12,
-                    fixedHeight = 12,
-                    alignment = TextAnchor.MiddleCenter,
-                    margin = new RectOffset(0, 4, 4, 0),
-                    padding = new RectOffset(0, 0, 0, 0)
-                };
+                    foldouts[path] = !foldouts[path];
+                }
 
-                // Use built-in Unity icons for foldout controls
-                Texture2D iconFolded = Constants.Icons.ARROW_LEFT;
-                Texture2D iconExpanded = Constants.Icons.ARROW_DOWN;
-                Texture2D iconLastNode = Constants.Icons.ARROW_CUBE;
-
-                foreach (var directory in directories)
+                EditorGUILayout.EndHorizontal();
+    
+                // Recursive draw call for children
+                if (foldouts[path])
                 {
-                    var relativePath = directory.Replace(Application.dataPath, "Assets");
-                    var folderName = Path.GetFileName(directory);
-
-                    foldouts.TryAdd(relativePath, false);
-
-                    EditorGUILayout.BeginHorizontal();
-                    GUILayout.Space(indentLevel * 20);
-
-                    bool hasChildren = Directory.GetDirectories(directory).Any();
-                    Texture iconToShow = foldouts[relativePath] ? iconExpanded : hasChildren ? iconFolded : null;
-                    
-                    if (iconToShow is null) iconToShow = iconLastNode;
-
-                    if (GUILayout.Button(iconToShow, iconButtonStyle))
+                    foreach (var directory in directories)
                     {
-                        foldouts[relativePath] = !foldouts[relativePath];
-                    }
-                    
-                    // Clicking the text will select the folder
-                    if (GUILayout.Button(folderName, labelLikeButton, GUILayout.ExpandWidth(true)))
-                    {
-                        selectedFolderPath = relativePath;
-                    }
-
-                    EditorGUILayout.EndHorizontal();
-
-                    if (foldouts.TryGetValue(relativePath, out bool isExpanded) && isExpanded)
-                    {
-                        DrawFolder(directory, indentLevel + 1);
+                        DrawFolder(directory.Replace(Application.dataPath, "Assets"), indentLevel + 1);
                     }
                 }
             }
-            
+
             private void TextFileGUI()
             {
                 GUILayout.Space(10);
