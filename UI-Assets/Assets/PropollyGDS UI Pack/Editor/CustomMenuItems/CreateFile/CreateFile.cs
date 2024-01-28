@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using PropollyGDS_UI_Pack.Editor.Custom_Menu_Items;
 using UnityEditor;
 using UnityEngine;
 
-namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
+namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
 {
     public class CreateFile
     {
@@ -81,10 +82,7 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
             
             private void FolderStructureGUI()
             {
-                if (!foldouts.ContainsKey("Assets"))
-                {
-                    foldouts.Add("Assets", false);
-                }
+                foldouts.TryAdd("Assets", false);
 
                 // Folder structure tab content
                 GUILayout.Label("Folder Structure", EditorStyles.boldLabel);
@@ -107,7 +105,7 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
             }
 
             // This method is used to draw the folder structure
-            void DrawFolder(string path, int indentLevel)
+            private void DrawFolder(string path, int indentLevel)
             {
                 var directories = Directory.GetDirectories(path).OrderBy(d => d).ToList();
 
