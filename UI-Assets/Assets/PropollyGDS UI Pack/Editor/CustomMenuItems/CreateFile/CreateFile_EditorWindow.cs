@@ -1,11 +1,9 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using PropollyGDS_UI_Pack.Editor.Custom_Menu_Items;
 using UnityEditor;
 using UnityEngine;
+using System.Collections.Generic;
+using PropollyGDS_UI_Pack.Editor.Custom_Menu_Items;
 
 namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
 {
@@ -27,7 +25,7 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
 
         private class CreateFileWindow : EditorWindow
         {
-            private Dictionary<string, bool> sectionToggles = new Dictionary<string, bool>();
+            private Dictionary<string, bool> sectionToggles = new();
 
             private void OnGUI()
             {
@@ -77,10 +75,10 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
             {
                 var directories = Directory.GetDirectories(path).OrderBy(d => d).ToList();
 
-                GUIStyle folderStyle = CreateFolderStyle(); // Create folder style
+                GUIStyle folderStyle = CreateFolderStyle();
 
                 const float checkboxWidth = 15f;
-                const float baseIndent = 20f; // Base indentation for all levels
+                const float baseIndent = 20f;
 
                 bool isRoot = (path == "Assets" && indentLevel == -1);
                 var folderName = isRoot ? "Assets (Root)" : Path.GetFileName(path);
