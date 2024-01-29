@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -27,13 +28,51 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
             templates["Singleton"] = new Template(Constants.ScriptingTemplates.SINGLETON);
             templates["UI Document"] = new Template(Constants.ScriptingTemplates.UI_DOCUMENT);
         }
+        
+        public string[] GetTemplateKeys() => 
+            templates.Keys.ToArray();
+        
+        public string GetTemplateContent(string key) => 
+            templates.TryGetValue(key, out Template template) ? template.Content : string.Empty;
 
-        public Template GetTemplate(string templateType)
+        public Template GetTemplate(string templateType) =>
+            templates.TryGetValue(templateType, out var template) ? template : null;
+
+        public string ParseAndProcessTemplate(string directory, string templateKey, string fileName, 
+            bool includeNamespace, Dictionary<string, bool> sectionToggles)
         {
-            if (templates.TryGetValue(templateType, out var template)) return template;
+            string generatedClassContent = GetTemplateContent(templateKey);
+            generatedClassContent = generatedClassContent.Replace("#SCRIPTNAME#", fileName);
             
-            Debug.LogError($"Template not found: {templateType}");
-            return null;
+            foreach (var section in sectionToggles)
+            {
+                string pattern = $"// \\[SECTION:{section.Key}\\](.*?)// \\[ENDSECTION\\]";
+                Match match = Regex.Match(generatedClassContent, pattern, RegexOptions.Singleline);
+                generatedClassContent = match.Success
+                    ? section.Value
+                        ? generatedClassContent.Replace(match.Value, match.Groups[1].Value)
+                        : generatedClassContent.Replace(match.Value, "")
+                    : generatedClassContent;
+            }
+            
+            if (!includeNamespace)
+            {
+                string namespacePattern = @"namespace #NAMESPACE#\s*{((?:[^{}]|{(?<c>)|}(?<-c>))*(?(c)(?!)))}";
+                generatedClassContent = Regex.Replace(generatedClassContent, namespacePattern, m =>
+                {
+                    var content = m.Groups[1].Value;
+                    var lines = content.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+                    var adjustedLines = lines.Select(line => line.StartsWith("    ") ? line.Substring(4) : line);
+                    return string.Join(Environment.NewLine, adjustedLines);
+                }, RegexOptions.Singleline);
+            }
+            else
+            {
+                generatedClassContent = generatedClassContent.Replace("#NAMESPACE#", directory.GenerateNamespaceFromDirectory());
+            }
+            
+            generatedClassContent = Regex.Replace(generatedClassContent, @"^\s+$[\r\n]*", "", RegexOptions.Multiline);
+            return generatedClassContent;
         }
     }
 
@@ -51,14 +90,9 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
         private void LoadTemplate(string resourcePath)
         {
             var textAsset = Resources.Load<TextAsset>(resourcePath);
-            if (textAsset != null)
-            {
-                Content = textAsset.text;
-            }
-            else
-            {
-                Debug.LogError($"Failed to load template: {resourcePath}");
-            }
+            if (textAsset == null) return;
+            
+            Content = textAsset.text;
         }
 
         private void ParseSections()
@@ -68,12 +102,8 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
             var matches = regex.Matches(Content);
 
             foreach (Match match in matches)
-            {
                 if (match.Success && match.Groups.Count > 1)
-                {
                     sectionNames.Add(match.Groups[1].Value);
-                }
-            }
 
             Sections = sectionNames.Distinct();
         }
