@@ -23,7 +23,6 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
             templates["C#"] = new Template(Constants.ScriptingTemplates.CSHARP_CLASS);
             templates["Interface"] = new Template(Constants.ScriptingTemplates.INTERFACE);
             templates["MonoBehaviour"] = new Template(Constants.ScriptingTemplates.MONOBEHAVIOUR);
-            templates["Popup"] = new Template(Constants.ScriptingTemplates.POPUP);
             templates["Scriptable Object"] = new Template(Constants.ScriptingTemplates.SCRIPTABLE_OBJECT);
             templates["Singleton"] = new Template(Constants.ScriptingTemplates.SINGLETON);
             templates["UI Document"] = new Template(Constants.ScriptingTemplates.UI_DOCUMENT);
@@ -97,10 +96,16 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
 
         private void ParseSections()
         {
+            if (string.IsNullOrEmpty(Content))
+            {
+                Sections = Enumerable.Empty<string>();
+                return;
+            }
+
             var sectionNames = new List<string>();
             var regex = new Regex("// \\[SECTION:(.*?)\\]");
             var matches = regex.Matches(Content);
-
+            
             foreach (Match match in matches)
                 if (match.Success && match.Groups.Count > 1)
                     sectionNames.Add(match.Groups[1].Value);

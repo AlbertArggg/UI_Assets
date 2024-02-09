@@ -77,51 +77,6 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
                     margin = new RectOffset(0, 0, 0, 0)
                 };
             }
-
-            // private void DrawFolder(string path, int indentLevel)
-            // {
-            //     var directories = Directory.GetDirectories(path).OrderBy(d => d).ToList();
-            //
-            //     GUIStyle folderStyle = CreateFolderStyle();
-            //
-            //     const float checkboxWidth = 15f;
-            //     const float baseIndent = 20f;
-            //
-            //     bool isRoot = (path == "Assets" && indentLevel == -1);
-            //     var folderName = isRoot ? "Assets (Root)" : Path.GetFileName(path);
-            //     foldouts.TryAdd(path, false);
-            //
-            //     EditorGUILayout.BeginHorizontal();
-            //
-            //     // Indentation
-            //     float indentSpace = baseIndent + (indentLevel + 1) * 20;
-            //     GUILayout.Space(isRoot ? baseIndent : indentSpace);
-            //
-            //     // Checkbox for folder selection
-            //     bool isSelected = selectedFolderPath == path;
-            //     isSelected = EditorGUILayout.Toggle(isSelected, GUILayout.Width(checkboxWidth));
-            //     if (isSelected && selectedFolderPath != path)
-            //     {
-            //         selectedFolderPath = path;
-            //     }
-            //
-            //     // Button for expanding/collapsing
-            //     if (GUILayout.Button(folderName, folderStyle, GUILayout.ExpandWidth(true)))
-            //     {
-            //         foldouts[path] = !foldouts[path];
-            //     }
-            //
-            //     EditorGUILayout.EndHorizontal();
-            //
-            //     // Recursive draw call for children
-            //     if (foldouts[path])
-            //     {
-            //         foreach (var directory in directories)
-            //         {
-            //             DrawFolder(directory.Replace(Application.dataPath, "Assets"), indentLevel + 1);
-            //         }
-            //     }
-            // }
             
             private void DrawFolder(ProjectDirectory directory, int indentLevel)
             {

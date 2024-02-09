@@ -10,7 +10,6 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
             public static string CSHARP_CLASS = "Templates/ScriptTemplates/C#";
             public static string INTERFACE = "Templates/ScriptTemplates/Interface";
             public static string MONOBEHAVIOUR = "Templates/ScriptTemplates/MonoBehaviour";
-            public static string POPUP = "Templates/ScriptTemplates/Popup";
             public static string SCRIPTABLE_OBJECT = "Templates/ScriptTemplates/ScriptableObject";
             public static string SINGLETON = "Templates/ScriptTemplates/Singleton";
             public static string UI_DOCUMENT = "Templates/ScriptTemplates/UiDocument";
@@ -32,24 +31,5 @@ namespace PropollyGDS_UI_Pack.Editor.Custom_Menu_Items
             ".html", 
             ".css"
         };
-        
-        public static string[] CreateCsTemplates =
-        {
-            "MonoBehaviour", 
-            "C# Class", 
-            "Abstract Class", 
-            "Interface", 
-            "UI Document", 
-            "Popup", 
-            "Scriptable Object", 
-            "Singleton"
-        };
-
-        public class Icons
-        {
-            public static Texture2D ARROW_DOWN = Resources.Load<Texture2D>("Icons/ArrowDown");
-            public static Texture2D ARROW_LEFT = Resources.Load<Texture2D>("Icons/ArrowLeft");
-            public static Texture2D ARROW_CUBE = Resources.Load<Texture2D>("Icons/Cube");
-        }
     }
 }

@@ -1,0 +1,43 @@
+using UnityEngine;
+
+namespace #NAMESPACE#
+{
+    public class #SCRIPTNAME# : MonoBehaviour
+    {
+        public static #SCRIPTNAME# Instance { get; private set; }
+
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+                DontDestroyOnLoad(gameObject);
+            }
+            else if (Instance != this)
+            {
+                Destroy(gameObject);
+            }
+        }
+
+        // [SECTION:Enable]
+        private void OnEnable()
+        {
+
+        }
+        // [ENDSECTION]
+
+        // [SECTION:Start]
+        private void Start()
+        {
+
+        }
+        // [ENDSECTION]
+
+        // [SECTION:Update]
+        private void Update()
+        {
+
+        }
+        // [ENDSECTION]
+    }
+}
