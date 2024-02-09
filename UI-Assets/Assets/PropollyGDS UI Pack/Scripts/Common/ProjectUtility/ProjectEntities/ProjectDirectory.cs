@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using PropollyGDS_UI_Pack.Editor.Custom_Menu_Items;
 using UnityEngine;
 
 namespace PropollyGDS_UI_Pack.Scripts.Common.ProjectUtility.Project
@@ -29,8 +30,9 @@ namespace PropollyGDS_UI_Pack.Scripts.Common.ProjectUtility.Project
                 .Select(subDirPath => new ProjectDirectory(subDirPath))
                 .ToList();
             
-            IconOpen = Files.Count > 0 ? "Icons/ProjectEntities/Directory_Full_Open" : "Icons/ProjectEntities/Directory_Empty_Open";
-            IconClosed = Files.Count > 0 ? "Icons/ProjectEntities/Directory_Full_Closed" : "Icons/ProjectEntities/Directory_Empty_Closed";
+            // Folder Icons
+            IconOpen = Files.Count > 0 || SubDirectories.Count > 0 ? Constants.ProjectEntities_128.FOLDER_OPEN : Constants.ProjectEntities_128.FOLDER_EMPTY ;
+            IconClosed = Files.Count > 0  || SubDirectories.Count > 0 ? Constants.ProjectEntities_128.FOLDER_CLOSED : Constants.ProjectEntities_128.FOLDER_EMPTY;
         }
         
         public override string ToString()

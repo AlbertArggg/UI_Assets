@@ -10,6 +10,9 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
 {
     public class CreateFile_EditorWindow
     {
+        private static readonly Texture FolderNotCollapsed = Resources.Load<Texture>(Constants.ProjectEntities_128.ARROW_DOWN);
+        private static readonly Texture FolderCollapsed = Resources.Load<Texture>(Constants.ProjectEntities_128.ARROW_LEFT);
+        
         private static readonly string[] fileExtensions = Constants.CreateFileTypes;
         private static readonly string[] tabs = { "Directory", "Text Files", "C# Templates" };
         private static int tabIndex, selectedExtensionIndex, selectedTemplateIndex;
@@ -34,7 +37,7 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
                 GUILayout.Label("Create File", EditorStyles.largeLabel);
 
                 GUILayout.Space(10);
-                GUILayout.Label("Selected Path: " + selectedFolderPath, EditorStyles.miniBoldLabel);
+                GUILayout.Label("Selected Path: " + selectedFolderPath, EditorStyles.label);
 
                 GUILayout.Space(10);
                 tabIndex = GUILayout.Toolbar(tabIndex, tabs, GUILayout.ExpandWidth(true));
@@ -61,12 +64,6 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
                 DrawFolder(rootDirectory, 0);
                 GUILayout.EndScrollView();
             }
-
-            private int CalculateIndentLevel(string directoryPath)
-            {
-                string root = Application.dataPath;
-                return directoryPath.Count(c => c == '/') - root.Count(c => c == '/');
-            }
             
             private GUIStyle CreateFolderStyle()
             {
@@ -76,6 +73,16 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
                     padding = new RectOffset(2, 2, 2, 2),
                     margin = new RectOffset(0, 0, 0, 0)
                 };
+            }
+            
+            private GUIStyle CreateIconButtonStyle()
+            {
+                GUIStyle style = new GUIStyle(GUI.skin.label);
+                style.padding = new RectOffset(0, 0, 0, 0);
+                style.margin = new RectOffset(0, 0, 0, 0);
+                style.border = new RectOffset(0, 0, 0, 0);
+                style.normal.background = null;
+                return style;
             }
             
             private void DrawFolder(ProjectDirectory directory, int indentLevel)
@@ -88,26 +95,40 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
 
                 bool isRoot = directory.DirectoryPath == "Assets";
                 var folderName = isRoot ? "Assets (Root)" : Path.GetFileName(directory.DirectoryPath);
-    
+
                 foldouts.TryAdd(directory.DirectoryPath, false);
 
                 EditorGUILayout.BeginHorizontal();
-    
+
                 int indentSpace = baseIndent + (indentLevel + 1) * 20;
                 GUILayout.Space(isRoot ? baseIndent : indentSpace);
-    
+
                 bool isSelected = selectedFolderPath == directory.DirectoryPath;
                 isSelected = EditorGUILayout.Toggle(isSelected, GUILayout.Width(checkboxWidth));
-    
+
                 if (isSelected && selectedFolderPath != directory.DirectoryPath)
                 {
                     selectedFolderPath = directory.DirectoryPath;
                 }
-    
+
+                // Load collapse/expand icons based on the folder's current state
+                Texture collapseIconTexture = foldouts[directory.DirectoryPath] ? FolderNotCollapsed : FolderCollapsed;
+
+                GUIStyle iconButtonStyle = CreateIconButtonStyle();
+
+                // Display collapse/expand icon with the custom GUIStyle
+                if (collapseIconTexture != null)
+                {
+                    if (GUILayout.Button(new GUIContent(collapseIconTexture), iconButtonStyle, GUILayout.Width(iconWidth), GUILayout.Height(18))) // Adjust height as needed
+                    {
+                        foldouts[directory.DirectoryPath] = !foldouts[directory.DirectoryPath];
+                    }
+                }
+
                 string iconName = directory.DirectoryPath != null && foldouts[directory.DirectoryPath] ? directory.IconOpen : directory.IconClosed;
                 Texture iconTexture = Resources.Load<Texture>(iconName);
-    
-                // Use GUILayout.Label instead of GUILayout.Button for the icon to control its alignment
+
+                // Use GUILayout.Label instead of GUILayout.Button for the folder icon to control its alignment
                 if (iconTexture != null)
                 {
                     // Ensure the icon is aligned with the text by adjusting the vertical alignment
@@ -122,7 +143,7 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
                 }
 
                 EditorGUILayout.EndHorizontal();
-                
+
                 if (directory.DirectoryPath != null && foldouts[directory.DirectoryPath])
                 {
                     foreach (var subDirectory in directory.SubDirectories)
@@ -163,7 +184,6 @@ namespace PropollyGDS_UI_Pack.Editor.CustomMenuItems.CreateFile
 
                 EditorGUILayout.EndHorizontal();
             }
-
             
             private void TextFileGUI()
             {
