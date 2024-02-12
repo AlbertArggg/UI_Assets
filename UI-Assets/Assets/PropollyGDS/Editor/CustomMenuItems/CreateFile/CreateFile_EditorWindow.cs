@@ -10,8 +10,17 @@ using PropollyGDS.Scripts.ProjectUtility;
 
 namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
 {
+    /// <summary>
+    /// Provides a static editor window for creating various types of files within the Unity Editor.
+    /// </summary>
     public static class CreateFile_EditorWindow
     {
+        // TODO: More Visually appealing window
+        // TODO: Allow user to define number of spaces per indent (in constants?)
+        // TODO: from Json to C# class should allow user to define naming convention such as Pascal case, camel case... 
+        // TODO: from Json to C# should allow users to define if they want vars public, private, constant, readonly...
+        // TODO: from Json to C# should replace textfield for variable type with dropdown where var types are limited to what would be allowed based on KVP values
+        
         private static readonly Texture FolderNotCollapsed = Resources.Load<Texture>(Constants.ProjectEntities.ARROW_DOWN);
         private static readonly Texture FolderCollapsed = Resources.Load<Texture>(Constants.ProjectEntities.ARROW_LEFT);
         
@@ -26,14 +35,22 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
         private static readonly TemplateManager templateManager = new();
         private static List<DTO> dataObjects = new();
 
-        [MenuItem("Propolly GDS/Create Files")]
-        private static void NewTextFile() =>
+        /// <summary>
+        /// Opens the "Create File" editor window, allowing users to create new files within the Unity project.
+        /// </summary>
+        [MenuItem("Propolly GDS/Create Files")] private static void NewTextFile() => 
             EditorWindow.GetWindow<CreateFileWindow>("Create File", true, typeof(EditorWindow));
 
+        /// <summary>
+        /// The main window for the "Create File" functionality, offering UI for creating text files, C# scripts from templates, and more.
+        /// </summary>
         private class CreateFileWindow : EditorWindow
         {
             private readonly Dictionary<string, bool> sectionToggles = new();
 
+            /// <summary>
+            /// Renders the window's GUI, including tabs for different file creation options.
+            /// </summary>
             private void OnGUI()
             {
                 GUILayout.Space(10);
@@ -64,6 +81,9 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 }
             }
 
+            /// <summary>
+            /// Renders the GUI for the folder structure, allowing users to select a directory.
+            /// </summary>
             private void FolderStructureGUI()
             {
                 GUILayout.Label("Folder Structure", EditorStyles.boldLabel);
@@ -73,6 +93,10 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 GUILayout.EndScrollView();
             }
             
+            /// <summary>
+            /// Creates and returns a GUIStyle for folders displayed in the GUI.
+            /// </summary>
+            /// <returns>A GUIStyle for folder items.</returns>
             private static GUIStyle CreateFolderStyle()
             {
                 return new GUIStyle(GUI.skin.label)
@@ -83,6 +107,10 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 };
             }
             
+            /// <summary>
+            /// Creates and returns a GUIStyle for icon buttons used in the GUI.
+            /// </summary>
+            /// <returns>A GUIStyle for icon buttons.</returns>
             private static GUIStyle CreateIconButtonStyle()
             {
                 var style = new GUIStyle(GUI.skin.label)
@@ -98,6 +126,11 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 return style;
             }
             
+            /// <summary>
+            /// Draws a folder item in the GUI, including any child folders and files.
+            /// </summary>
+            /// <param name="directory">The directory to draw.</param>
+            /// <param name="indentLevel">The current indentation level for nested folders.</param>
             private static void DrawFolder(ProjectDirectory directory, int indentLevel)
             {
                 var folderStyle = CreateFolderStyle();
@@ -169,6 +202,12 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 }
             }
             
+            /// <summary>
+            /// Draws a file item in the GUI within its parent folder.
+            /// </summary>
+            /// <param name="file">The file to draw.</param>
+            /// <param name="indentLevel">The indentation level, accounting for nesting within folders.</param>
+            /// <param name="checkboxWidth">The width of the checkbox UI element.</param>
             private static void DrawFile(ProjectFile file, int indentLevel, int checkboxWidth)
             {
                 const int baseIndent = 20;
@@ -196,6 +235,9 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 EditorGUILayout.EndHorizontal();
             }
             
+            /// <summary>
+            /// Renders the GUI for creating text files, including naming and extension selection.
+            /// </summary>
             private static void TextFileGUI()
             {
                 GUILayout.Space(10);
@@ -211,6 +253,9 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 }
             }
 
+            /// <summary>
+            /// Renders the GUI for selecting a C# template and setting options for file creation.
+            /// </summary>
             private void CSharpTemplateGUI()
             {
                 GUILayout.Space(10);
@@ -229,6 +274,9 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 if (GUILayout.Button("Create", GUILayout.Width(100))) CreateScriptFile();
             }
 
+            /// <summary>
+            /// Dynamically creates toggle switches for optional sections within the selected C# template.
+            /// </summary>
             private void DynamicSectionToggles()
             {
                 var selectedTemplateKey = templateManager.GetTemplateKeys()[selectedTemplateIndex];
@@ -241,6 +289,9 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 }
             }
 
+            /// <summary>
+            /// Creates a text file with the specified options.
+            /// </summary>
             private static void CreateTextFile()
             {
                 const string content = "Your text here...";
@@ -248,6 +299,9 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 FileGenerator.CreateFile(fileName, selectedFolderPath, content, extension);
             }
 
+            /// <summary>
+            /// Creates a C# script file from the selected template and user-defined options.
+            /// </summary>
             private void CreateScriptFile()
             {
                 var selectedTemplateKey = templateManager.GetTemplateKeys()[selectedTemplateIndex];
@@ -255,6 +309,9 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 FileGenerator.CreateFile(fileName, selectedFolderPath, templateContent, ".cs");
             }
 
+            /// <summary>
+            /// Renders the GUI for creating C# classes from JSON definitions.
+            /// </summary>
             private void FromJsonTemplateGUI()
             {
                 GUILayout.Space(10);
@@ -336,6 +393,9 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 GUILayout.EndScrollView();
             }
             
+            /// <summary>
+            /// Generates and creates C# class files based on parsed JSON objects.
+            /// </summary>
             private static void CreateClasses()
             {
                 foreach (var dto in dataObjects)
