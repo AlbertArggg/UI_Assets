@@ -1,0 +1,59 @@
+{
+  "guns": [
+    {
+      "id": "gun01",
+      "name": "M4A1",
+      "type": "Assault Rifle",
+      "ammoType": "5.56mm",
+      "stats": {
+        "damage": 43,
+        "range": 800,
+        "fireRate": 800,
+        "recoil": 1.6,
+        "accuracy": 85
+      },
+      "attachments": [
+        "Suppressor",
+        "Extended Mag",
+        "Grip",
+        "Scope"
+      ]
+    },
+    {
+      "id": "gun02",
+      "name": "AK-47",
+      "type": "Assault Rifle",
+      "ammoType": "7.62mm",
+      "stats": {
+        "damage": 49,
+        "range": 715,
+        "fireRate": 600,
+        "recoil": 2.1,
+        "accuracy": 80
+      },
+      "attachments": [
+        "Flash Hider",
+        "Drum Mag",
+        "Stock",
+        "Red Dot Sight"
+      ]
+    },
+    {
+      "id": "gun03",
+      "name": "Desert Eagle",
+      "type": "Pistol",
+      "ammoType": ".50 AE",
+      "stats": {
+        "damage": 91,
+        "range": 200,
+        "fireRate": 300,
+        "recoil": 3.6,
+        "accuracy": 75
+      },
+      "attachments": [
+        "Muzzle Brake",
+        "Extended Barrel"
+      ]
+    }
+  ]
+}

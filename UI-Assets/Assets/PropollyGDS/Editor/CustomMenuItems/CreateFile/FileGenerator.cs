@@ -8,7 +8,7 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
     {
         public static void CreateFile(string fileName, string directory, string content, string extension)
         {
-            string fullPath = GenerateFullPath(fileName, directory, extension);
+            var fullPath = GenerateFullPath(fileName, directory, extension);
             
             if (File.Exists(fullPath))
             {

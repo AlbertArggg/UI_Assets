@@ -1,0 +1,85 @@
+{
+  "player": {
+    "id": "12345",
+    "name": "John Doe",
+    "position": "Forward",
+    "team": {
+      "id": "54321",
+      "name": "The Eagles",
+      "league": "National Soccer League"
+    },
+    "personalDetails": {
+      "age": 25.0,
+      "nationality": "Canadian",
+      "birthDate": "1998-04-23"
+    },
+    "contactDetails": {
+      "email": "johndoe@example.com",
+      "phone": "+1234567890"
+    }
+  },
+  "stats": [
+    {
+      "season": "2023",
+      "totalGames": 34,
+      "goals": 23,
+      "assists": 12,
+      "yellowCards": 3,
+      "redCards": 0,
+      "minutesPlayed": 2890,
+      "matches": [
+        {
+          "matchId": "9876",
+          "opponent": "The Hawks",
+          "date": "2023-03-12",
+          "goals": 2,
+          "assists": 1,
+          "yellowCards": 0,
+          "redCards": 0,
+          "minutesPlayed": 90
+        },
+        {
+          "matchId": "9877",
+          "opponent": "The Falcons",
+          "date": "2023-03-19",
+          "goals": 1,
+          "assists": 0,
+          "yellowCards": 1,
+          "redCards": 0,
+          "minutesPlayed": 85
+        }
+      ]
+    },
+    {
+      "season": "2024",
+      "totalGames": 12,
+      "goals": 9,
+      "assists": 5,
+      "yellowCards": 1,
+      "redCards": 0,
+      "minutesPlayed": 1080,
+      "matches": [
+        {
+          "matchId": "9880",
+          "opponent": "The Seagulls",
+          "date": "2024-02-11",
+          "goals": 2,
+          "assists": 2,
+          "yellowCards": 0,
+          "redCards": 0,
+          "minutesPlayed": 90
+        },
+        {
+          "matchId": "9881",
+          "opponent": "The Lions",
+          "date": "2024-02-18",
+          "goals": 1,
+          "assists": 1,
+          "yellowCards": 0,
+          "redCards": 0,
+          "minutesPlayed": 90
+        }
+      ]
+    }
+  ]
+}

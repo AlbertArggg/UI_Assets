@@ -1,9 +1,11 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using PropollyGDS.Scripts;
+using PropollyGDS.Scripts.Extensions;
 using PropollyGDS.Scripts.ProjectUtility;
 
 namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
@@ -14,14 +16,15 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
         private static readonly Texture FolderCollapsed = Resources.Load<Texture>(Constants.ProjectEntities.ARROW_LEFT);
         
         private static readonly string[] fileExtensions = Constants.FileTypes;
-        private static readonly string[] tabs = { "Directory", "Text Files", "C# Templates" };
-        private static int tabIndex, selectedExtensionIndex, selectedTemplateIndex;
-        private static Vector2 scrollPosition;
+        private static readonly string[] tabs = { "Directory", "Text Files", "C# Templates", "Json to C#" };
+        private static int tabIndex, selectedExtensionIndex, selectedTemplateIndex, selectedJsonIndex;
+        private static Vector2 scrollPositionDirectories, scrollPosition;
         private static readonly Dictionary<string, bool> foldouts = new();
         private static string fileName = "NewFile";
         private static string selectedFolderPath = "Assets";
         private static bool includeNamespace = true;
         private static readonly TemplateManager templateManager = new();
+        private static List<DTO> dataObjects = new();
 
         [MenuItem("Propolly GDS/Create Files")]
         private static void NewTextFile() =>
@@ -42,20 +45,29 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 GUILayout.Space(10);
                 tabIndex = GUILayout.Toolbar(tabIndex, tabs, GUILayout.ExpandWidth(true));
 
-                Action action = tabIndex switch
+                switch (tabIndex)
                 {
-                    0 => FolderStructureGUI,
-                    1 => TextFileGUI,
-                    2 => CSharpTemplateGUI,
-                    _ => throw new ArgumentOutOfRangeException(nameof(tabIndex), $"Unexpected tab index: {tabIndex}")
-                };
-                action();
+                    case 0:
+                        FolderStructureGUI();
+                        break;
+                    case 1:
+                        TextFileGUI();
+                        break;
+                    case 2:
+                        CSharpTemplateGUI();
+                        break;
+                    case 3:
+                        FromJsonTemplateGUI();
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(tabIndex), $"Unexpected tab index: {tabIndex}");
+                }
             }
 
             private void FolderStructureGUI()
             {
                 GUILayout.Label("Folder Structure", EditorStyles.boldLabel);
-                scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(true));
+                scrollPositionDirectories = GUILayout.BeginScrollView(scrollPositionDirectories, GUILayout.ExpandHeight(true));
                 var rootDirectory = new ProjectDirectory(Application.dataPath);
                 DrawFolder(rootDirectory, 0);
                 GUILayout.EndScrollView();
@@ -241,6 +253,98 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 var selectedTemplateKey = templateManager.GetTemplateKeys()[selectedTemplateIndex];
                 var templateContent = templateManager.ParseAndProcessTemplate(selectedFolderPath, selectedTemplateKey, fileName, includeNamespace, sectionToggles);
                 FileGenerator.CreateFile(fileName, selectedFolderPath, templateContent, ".cs");
+            }
+
+            private void FromJsonTemplateGUI()
+            {
+                GUILayout.Space(10);
+                includeNamespace = EditorGUILayout.Toggle("Include Namespace", includeNamespace);
+                GUILayout.Space(10);
+                
+                GUILayout.Space(10);
+                GUILayout.Label("Select Json:", EditorStyles.boldLabel);
+                
+                var jsonFiles = Resources.LoadAll<TextAsset>(Constants.JsonData.DATA).Select(asset => asset.name).ToArray();
+                selectedJsonIndex = EditorGUILayout.Popup("Json File:", selectedJsonIndex, jsonFiles, GUILayout.Width(430));
+                
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(286);
+                if (GUILayout.Button("Read JSON", GUILayout.Width(150)))
+                {
+                    if (jsonFiles.Length > 0 && selectedJsonIndex >= 0 && selectedJsonIndex < jsonFiles.Length)
+                    {
+                        var selectedJson = Resources.Load<TextAsset>($"{Constants.JsonData.DATA}/{jsonFiles[selectedJsonIndex]}");
+
+                        if (selectedJson is null)
+                        {
+                            Debug.LogError("Selected JSON is null");
+                            return;
+                        }
+
+                        var jsonContent = selectedJson.text;
+                        var className = jsonFiles[selectedJsonIndex];
+                        dataObjects = JsonToCsharpManager.GenerateClassFromJson(jsonContent, className);
+                        
+                        Repaint();
+                    }
+                    else
+                    {
+                        GUILayout.Label("No JSON file selected or available.", EditorStyles.miniLabel);
+                    }
+                }
+                GUILayout.FlexibleSpace(); // Pushes everything to the left
+                GUILayout.EndHorizontal();
+
+                if (!dataObjects.Any()) return;
+
+                scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(true));
+                for (var dtoIndex = 0; dtoIndex < dataObjects.Count; dtoIndex++)
+                {
+                    var dto = dataObjects[dtoIndex];
+                    GUILayout.Space(10);
+
+                    GUILayout.BeginHorizontal();
+                    GUILayout.Label("Class:", GUILayout.Width(60));
+                    dto.Name = EditorGUILayout.TextField(dto.Name, GUILayout.Width(150));
+                    GUILayout.FlexibleSpace();
+                    GUILayout.EndHorizontal();
+                        
+                    for (var i = 0; i < dto.Fields.Count; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+                        GUILayout.Label("Name:", GUILayout.Width(60));
+                        dto.Fields[i].Name = EditorGUILayout.TextField(dto.Fields[i].Name, GUILayout.Width(150));
+                        GUILayout.Label("Type:", GUILayout.Width(60));
+                        dto.Fields[i].Type = EditorGUILayout.TextField(dto.Fields[i].Type, GUILayout.Width(150));
+                        GUILayout.FlexibleSpace();
+                        GUILayout.EndHorizontal();
+                    }
+                }
+
+                GUILayout.Space(10);
+                
+                // Begin a horizontal group for the Create button
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(286);
+                if (GUILayout.Button("Create Classes", GUILayout.Width(150)))
+                {
+                    CreateClasses();
+                }
+                GUILayout.FlexibleSpace(); // Pushes everything to the left
+                GUILayout.EndHorizontal();
+
+                GUILayout.EndScrollView();
+            }
+            
+            private static void CreateClasses()
+            {
+                foreach (var dto in dataObjects)
+                {
+                    var content = JsonToCsharpManager.GenerateClassContent(dto,
+                        includeNamespace ? selectedFolderPath.GenerateNamespaceFromDirectory():null);
+                    
+                    FileGenerator.CreateFile(dto.Name, selectedFolderPath, content, ".cs");
+                }
             }
         }
     }
