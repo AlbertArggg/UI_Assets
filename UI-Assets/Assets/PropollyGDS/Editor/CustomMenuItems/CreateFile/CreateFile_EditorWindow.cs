@@ -319,13 +319,17 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 GUILayout.Space(10);
 
                 GUILayout.Label("Select Json:", EditorStyles.boldLabel);
-
                 var jsonFiles = Resources.LoadAll<TextAsset>(Constants.JsonData.DATA).Select(asset => asset.name).ToArray();
-                selectedJsonIndex = EditorGUILayout.Popup("Json File:", selectedJsonIndex, jsonFiles, GUILayout.Width(430));
 
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(286);
+                EditorGUILayout.BeginHorizontal();
+                GUILayout.Label("Json File:", GUILayout.Width(312));
                 
+                selectedJsonIndex = EditorGUILayout.Popup(selectedJsonIndex, jsonFiles, GUILayout.Width(150));
+                EditorGUILayout.EndHorizontal();
+                
+                GUILayout.BeginHorizontal();
+                GUILayout.Space(320);
+
                 if (GUILayout.Button("Read JSON", GUILayout.Width(150)))
                 {
                     if (jsonFiles.Length > 0 && selectedJsonIndex >= 0 && selectedJsonIndex < jsonFiles.Length)
@@ -341,7 +345,7 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                         var jsonContent = selectedJson.text;
                         var className = jsonFiles[selectedJsonIndex];
                         dataObjects = JsonToCsharpManager.GenerateClassFromJson(jsonContent, className);
-                        
+
                         Repaint();
                     }
                     else
@@ -355,6 +359,7 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 if (!dataObjects.Any()) return;
 
                 scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(true));
+                List<int> classesToRemove = new List<int>();
                 for (var dtoIndex = 0; dtoIndex < dataObjects.Count; dtoIndex++)
                 {
                     var dto = dataObjects[dtoIndex];
@@ -363,9 +368,17 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                     GUILayout.BeginHorizontal();
                     GUILayout.Label("Class:", GUILayout.Width(60));
                     dto.Name = EditorGUILayout.TextField(dto.Name, GUILayout.Width(150));
+
+                    GUILayout.Space(218);
+                    if (GUILayout.Button("X", GUILayout.Width(30)))
+                    {
+                        classesToRemove.Add(dtoIndex);
+                    }
+                    
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
-                        
+
+                    List<int> fieldsToRemove = new List<int>();
                     for (var i = 0; i < dto.Fields.Count; i++)
                     {
                         GUILayout.BeginHorizontal();
@@ -373,21 +386,49 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                         dto.Fields[i].Name = EditorGUILayout.TextField(dto.Fields[i].Name, GUILayout.Width(150));
                         GUILayout.Label("Type:", GUILayout.Width(60));
                         dto.Fields[i].Type = EditorGUILayout.TextField(dto.Fields[i].Type, GUILayout.Width(150));
+
+                        if (GUILayout.Button("X", GUILayout.Width(30)))
+                        {
+                            fieldsToRemove.Add(i);
+                        }
+
                         GUILayout.FlexibleSpace();
                         GUILayout.EndHorizontal();
                     }
+
+                    foreach (var index in fieldsToRemove.OrderByDescending(i => i))
+                    {
+                        dto.Fields.RemoveAt(index);
+                    }
+
+                    if (GUILayout.Button("+", GUILayout.Width(30)))
+                    {
+                        dto.Fields.Add(new Field { Name = "NewField", Type = "int" });
+                        Repaint();
+                    }
+                }
+
+                foreach (var index in classesToRemove.OrderByDescending(i => i))
+                {
+                    dataObjects.RemoveAt(index);
+                }
+
+                GUILayout.Space(20);
+                if (GUILayout.Button("Add Class", GUILayout.Width(150)))
+                {
+                    dataObjects.Add(new DTO { Name = "NewClass", Fields = new List<Field>() });
+                    Repaint();
                 }
 
                 GUILayout.Space(10);
-                
-                // Begin a horizontal group for the Create button
+
                 GUILayout.BeginHorizontal();
-                GUILayout.Space(286);
+                GUILayout.Space(318);
                 if (GUILayout.Button("Create Classes", GUILayout.Width(150)))
                 {
                     CreateClasses();
                 }
-                GUILayout.FlexibleSpace(); // Pushes everything to the left
+                GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
                 GUILayout.EndScrollView();
