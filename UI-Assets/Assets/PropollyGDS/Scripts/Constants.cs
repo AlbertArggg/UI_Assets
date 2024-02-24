@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace PropollyGDS.Scripts
 {
     /// <summary>
@@ -65,5 +67,30 @@ namespace PropollyGDS.Scripts
         /// File Types used to create any file not including C# classes, this list is safe to expand with any file type
         /// </summary>
         public static readonly string[] FileTypes = { ".txt", ".json", ".xml", ".csv", ".md", ".yaml", ".ini", ".cfg", ".log", ".bat", ".sh", ".html", ".css" };
+
+        
+        public static class Utility
+        {
+            public static readonly List<string> DATATYPE_OPTIONS = new()
+            {
+                "int", "long", "float", "double", "char", "bool", "string", "byte", "DateTime"
+            };
+            
+            /// <summary>
+            /// This is used to replace known conflicts in namespacing with alternative names
+            /// </summary>
+            public static readonly Dictionary<string, string> KNOWN_NAMESPACE_CONFLICTS = new()
+            {
+                {"Resources", "ResourceCollection"},
+                {"System", "SystemCollection"},
+                {"Collections", "CollectionGroup"},
+                {"IO", "InputOutput"},
+                {"Text", "TextGroup"},
+                {"Net", "Network"},
+                {"UI", "UiElements"},
+                {"Animation", "Animations"}
+                // Add other conflicts here as you see fit
+            };
+        }
     }
 }

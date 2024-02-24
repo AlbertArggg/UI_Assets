@@ -1,4 +1,4 @@
-# CREATE FILES - Editor Window
+# CREATE FILES - Editor Window V-1.0.0
 
 ## Brief Description
 
@@ -41,7 +41,7 @@ Available now on the Unity Asset Store, this tool is your key to unlocking a mor
 ## How to use
 
 - **Step 1: Initiating Your Journey**
-  Embark on your creative endeavor by navigating to the top menu. Here, select *Propollygds* followed by *Create files* to unveil the portal to productivity. This initial step places a world of file management and creation at your fingertips.
+  Embark on your creative endeavor by navigating to the top menu. Here, select *Tools*, *Propollygds*, *Create files* to unveil the portal to productivity. This initial step places a world of file management and creation at your fingertips.
 
 - **Step 2: Streamlining Your Environment**
   Optimize your workspace by seamlessly docking the editor window within easy reach. This strategic placement ensures swift access and enhances your workflow, making your project management more efficient and user-friendly.
@@ -60,5 +60,21 @@ Available now on the Unity Asset Store, this tool is your key to unlocking a mor
 
 - **Step 5: Enjoy!**
   Revel in the capabilities at your disposal and may this asset significantly enhance your productivity. We welcome your feedback and suggestions for future enhancements, many of which are already in development for the next release.
+
+
+# CREATE FILES - Editor Window V-1.0.1
+### Auto Namespace Generator Updates
+In this update, we have significantly improved how namespaces are generated from directory paths to avoid conflicts with existing class names within the Unity environment and .NET Framework. These enhancements ensure that the automatic namespacing functionality is more robust and less likely to create issues during project compilation.
+
+- **Dynamic Type Checking:** Introduced a method to dynamically check if a namespace part conflicts with any known class names across all currently loaded assemblies. This prevents the accidental creation of namespaces that could interfere with system and Unity class names.
+
+- **Conflict Resolution Dictionary:** Implemented a `Dictionary<string, string>` named `KNOWN_NAMESPACE_CONFLICTS` that maps potential conflicting directory names to alternative namespace parts. This preemptive measure addresses common conflicts directly, providing a first layer of defense against naming issues.
+
+- **Namespace Part Adjustment:** For directory names that still pose a conflict after the initial dictionary check, we've updated the namespace generation logic to append a suffix `Ns` to the conflicting part, ensuring uniqueness.
+
+**Technical Details:**
+- The `ReflectionUtilities.TypeExists` method efficiently checks for type conflicts, leveraging the .NET reflection capabilities to scan through all loaded assemblies.
+
+- The `GenerateNamespaceFromDirectory` extension method for strings has been updated to incorporate these checks and transformations, ensuring that every generated namespace is safe to use within the project.
 
 © 2023 PropollyGDS.com. All rights reserved.

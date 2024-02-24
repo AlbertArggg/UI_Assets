@@ -23,7 +23,24 @@ namespace PropollyGDS.Scripts.Extensions
 
             var namespacePath = relativePath.Replace("Assets/", "").Replace("/", ".");
             namespacePath = namespacePath.Replace(" ", "_");
+            
+            // Split namespace and check each part for conflicts. as an example, 
+            // if the namespace includes "Resources" this would cause an issue 
+            var namespaceParts = namespacePath.Split('.');
+            for (int i = 0; i < namespaceParts.Length; i++)
+            {
+                var part = namespaceParts[i];
+                if (Constants.Utility.KNOWN_NAMESPACE_CONFLICTS.TryGetValue(part, out var value))
+                {
+                    namespaceParts[i] = value;
+                }
+                else if (ReflectionUtilities.TypeExists(part))
+                {
+                    namespaceParts[i] = $"{part}Ns"; // Fallback for unexpected conflicts
+                }
+            }
 
+            namespacePath = string.Join(".", namespaceParts);
             return namespacePath;
         }
     }

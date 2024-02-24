@@ -38,7 +38,7 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
         /// <summary>
         /// Opens the "Create File" editor window, allowing users to create new files within the Unity project.
         /// </summary>
-        [MenuItem("Propolly GDS/Create Files")] private static void NewTextFile() => 
+        [MenuItem("Tools/Propolly GDS/Create Files")] private static void NewTextFile() => 
             EditorWindow.GetWindow<CreateFileWindow>("Create File", true, typeof(EditorWindow));
 
         /// <summary>
@@ -317,15 +317,15 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 GUILayout.Space(10);
                 includeNamespace = EditorGUILayout.Toggle("Include Namespace", includeNamespace);
                 GUILayout.Space(10);
-                
-                GUILayout.Space(10);
+
                 GUILayout.Label("Select Json:", EditorStyles.boldLabel);
-                
+
                 var jsonFiles = Resources.LoadAll<TextAsset>(Constants.JsonData.DATA).Select(asset => asset.name).ToArray();
                 selectedJsonIndex = EditorGUILayout.Popup("Json File:", selectedJsonIndex, jsonFiles, GUILayout.Width(430));
-                
+
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(286);
+                
                 if (GUILayout.Button("Read JSON", GUILayout.Width(150)))
                 {
                     if (jsonFiles.Length > 0 && selectedJsonIndex >= 0 && selectedJsonIndex < jsonFiles.Length)
@@ -349,7 +349,7 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                         GUILayout.Label("No JSON file selected or available.", EditorStyles.miniLabel);
                     }
                 }
-                GUILayout.FlexibleSpace(); // Pushes everything to the left
+                GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
 
                 if (!dataObjects.Any()) return;
