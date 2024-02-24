@@ -19,7 +19,6 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
         // TODO: Allow user to define number of spaces per indent (in constants?)
         // TODO: from Json to C# class should allow user to define naming convention such as Pascal case, camel case... 
         // TODO: from Json to C# should allow users to define if they want vars public, private, constant, readonly...
-        // TODO: from Json to C# should replace textfield for variable type with dropdown where var types are limited to what would be allowed based on KVP values
         
         private static readonly Texture FolderNotCollapsed = Resources.Load<Texture>(Constants.ProjectEntities.ARROW_DOWN);
         private static readonly Texture FolderCollapsed = Resources.Load<Texture>(Constants.ProjectEntities.ARROW_LEFT);
