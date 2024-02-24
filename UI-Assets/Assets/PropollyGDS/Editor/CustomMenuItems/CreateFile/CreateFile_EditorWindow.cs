@@ -323,10 +323,9 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
 
                 EditorGUILayout.BeginHorizontal();
                 GUILayout.Label("Json File:", GUILayout.Width(312));
-                
                 selectedJsonIndex = EditorGUILayout.Popup(selectedJsonIndex, jsonFiles, GUILayout.Width(150));
                 EditorGUILayout.EndHorizontal();
-                
+
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(320);
 
@@ -335,7 +334,6 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                     if (jsonFiles.Length > 0 && selectedJsonIndex >= 0 && selectedJsonIndex < jsonFiles.Length)
                     {
                         var selectedJson = Resources.Load<TextAsset>($"{Constants.JsonData.DATA}/{jsonFiles[selectedJsonIndex]}");
-
                         if (selectedJson is null)
                         {
                             Debug.LogError("Selected JSON is null");
@@ -343,9 +341,7 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                         }
 
                         var jsonContent = selectedJson.text;
-                        var className = jsonFiles[selectedJsonIndex];
-                        dataObjects = JsonToCsharpManager.GenerateClassFromJson(jsonContent, className);
-
+                        dataObjects = JsonToCsharpManager.GenerateClassFromJson(jsonContent, jsonFiles[selectedJsonIndex]);
                         Repaint();
                     }
                     else
@@ -359,7 +355,9 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 if (!dataObjects.Any()) return;
 
                 scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.ExpandHeight(true));
-                List<int> classesToRemove = new List<int>();
+                Dictionary<string, string> classRenames = new Dictionary<string, string>();
+
+                // Class processing loop
                 for (var dtoIndex = 0; dtoIndex < dataObjects.Count; dtoIndex++)
                 {
                     var dto = dataObjects[dtoIndex];
@@ -367,18 +365,24 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
 
                     GUILayout.BeginHorizontal();
                     GUILayout.Label("Class:", GUILayout.Width(60));
-                    dto.Name = EditorGUILayout.TextField(dto.Name, GUILayout.Width(150));
+                    string newName = EditorGUILayout.TextField(dto.Name, GUILayout.Width(150));
 
-                    GUILayout.Space(218);
+                    if (newName != dto.Name)
+                    {
+                        classRenames[dto.Name] = newName;
+                        dto.Name = newName;
+                    }
+
                     if (GUILayout.Button("X", GUILayout.Width(30)))
                     {
-                        classesToRemove.Add(dtoIndex);
+                        dataObjects.RemoveAt(dtoIndex);
+                        dtoIndex--;
+                        continue;
                     }
-                    
+
                     GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
-
-                    List<int> fieldsToRemove = new List<int>();
+                    
                     for (var i = 0; i < dto.Fields.Count; i++)
                     {
                         GUILayout.BeginHorizontal();
@@ -389,16 +393,12 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
 
                         if (GUILayout.Button("X", GUILayout.Width(30)))
                         {
-                            fieldsToRemove.Add(i);
+                            dto.Fields.RemoveAt(i);
+                            i--;
                         }
 
                         GUILayout.FlexibleSpace();
                         GUILayout.EndHorizontal();
-                    }
-
-                    foreach (var index in fieldsToRemove.OrderByDescending(i => i))
-                    {
-                        dto.Fields.RemoveAt(index);
                     }
 
                     if (GUILayout.Button("+", GUILayout.Width(30)))
@@ -407,10 +407,13 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                         Repaint();
                     }
                 }
-
-                foreach (var index in classesToRemove.OrderByDescending(i => i))
+                
+                foreach (var rename in classRenames)
                 {
-                    dataObjects.RemoveAt(index);
+                    var oldName = rename.Key;
+                    var newName = rename.Value;
+                    foreach (var field in from dto in dataObjects from field in dto.Fields where field.Type == oldName || field.Type.Contains(oldName) select field)
+                        field.Type = newName;
                 }
 
                 GUILayout.Space(20);
@@ -421,7 +424,6 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
                 }
 
                 GUILayout.Space(10);
-
                 GUILayout.BeginHorizontal();
                 GUILayout.Space(318);
                 if (GUILayout.Button("Create Classes", GUILayout.Width(150)))
@@ -433,7 +435,7 @@ namespace PropollyGDS.Editor.CustomMenuItems.CreateFile
 
                 GUILayout.EndScrollView();
             }
-            
+
             /// <summary>
             /// Generates and creates C# class files based on parsed JSON objects.
             /// </summary>
