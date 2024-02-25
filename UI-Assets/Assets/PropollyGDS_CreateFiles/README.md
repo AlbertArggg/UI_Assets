@@ -72,9 +72,13 @@ In this update, we have significantly improved how namespaces are generated from
 
 - **Namespace Part Adjustment:** For directory names that still pose a conflict after the initial dictionary check, we've updated the namespace generation logic to append a suffix `Ns` to the conflicting part, ensuring uniqueness.
 
-**Technical Details:**
-- The `ReflectionUtilities.TypeExists` method efficiently checks for type conflicts, leveraging the .NET reflection capabilities to scan through all loaded assemblies.
+### Enhanced JSON to C# Class Generation
+We're excited to announce the latest update to our JSON to C# class generator within the CREATE FILES Editor Window. Version 1.0.1 introduces the highly requested features for dynamically managing C# classes and fields directly from JSON data. This update significantly streamlines the process of converting JSON into structured C# classes, providing developers with more flexibility and control over their data models.
 
-- The `GenerateNamespaceFromDirectory` extension method for strings has been updated to incorporate these checks and transformations, ensuring that every generated namespace is safe to use within the project.
+- **Dynamic Class and Field Management:** Developers can now effortlessly add new classes and remove existing ones from the JSON data structure. This dynamic interaction extends to the fields within each class, allowing for a fully customizable approach to defining your data models.
+
+- **Improved User Interface:** The Editor Window has been refined to include intuitive options for adding and removing both classes and fields. With just a click, users can insert a new class or field, or remove unwanted ones, making the management of your data structure more accessible than ever.
+
+- **Class Name Changes:** Changing the class name in any Data Object will be reflected in other Data Object's field types.
 
 © 2023 PropollyGDS.com. All rights reserved.
